@@ -1,16 +1,19 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
 
 app.use(express.static('public'));
 
+app.use(bodyParser.urlencoded({extended: false}));
+
 app.post('/sendemail', (req, res) => {
 
   var helper = require('sendgrid').mail;
-  var from_email = new helper.Email('test@example.com');
+  var from_email = new helper.Email(req.body.fromEmail);
   var to_email = new helper.Email('eric.sowell@gmail.com');
-  var subject = 'Hello World from the SendGrid Node.js Library!';
-  var content = new helper.Content('text/plain', 'Hello, Email!');
+  var subject = req.body.subject;
+  var content = new helper.Content('text/plain', req.body.message);
   var mail = new helper.Mail(from_email, subject, to_email, content);
 
   var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
